@@ -1,0 +1,6 @@
+.idea/
+_pychache_/
+results/
+venv/
+config.json
+zones.pickle
