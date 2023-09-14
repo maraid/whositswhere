@@ -1,5 +1,6 @@
 .idea/
 _pychache_/
+whositswhere/__pycache__/
 results/
 venv/
 config.json

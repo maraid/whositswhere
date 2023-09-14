@@ -1,6 +1,6 @@
 from models import ZoneMap
 import pathlib
-from PIL import Image, ImageDraw, ImageColor, ImageFont
+from PIL import Image, ImageDraw, ImageColor, ImageFont, ImageOps
 import logging
 
 
@@ -26,16 +26,31 @@ class ImageHandler:
     def _draw_names(self, im, zone):
         draw = ImageDraw.Draw(im)
         for desk in zone.desks.values():
-            x = im.width * desk.x
-            y = im.height * desk.y
+            x = int(im.width * desk.x)
+            y = int(im.height * desk.y)
             if desk.is_free:
-                r = 0.02963341 * im.width
+                r = 0.03 * im.width
                 x0 = x - r / 2
                 x1 = x + r / 2
                 y0 = y - r / 2
                 y1 = y + r / 2
                 draw.arc((x0, y0, x1, y1), 0, 360, "midnightblue", 3)
             else:
-                font = ImageFont.truetype("arial.ttf", 14, encoding="unic")
+                # draw a text on a new canvas
+                txt_canvas = Image.new('L', (500, 50))
+                text_draw = ImageDraw.Draw(txt_canvas)
+                font = ImageFont.truetype("arial.ttf", 18, encoding="unic")
+                text_draw.text((0, 0), desk.reserved_by.name, font=font, fill=255)
+
+                # rotate to avoid overlapping letters
+                w = txt_canvas.rotate(-12, expand=True)
+
+                # offset to kind of align the name on the middle of the chairs
+                x_offset = int(-len(desk.reserved_by.name) * 0.5 * 18 / 2)
+                y_offset = -20
+                # paste the text on the image
                 color = "darkgreen" if desk.reserved_by.name in self.vip else "darkred"
-                draw.text((x, y), desk.reserved_by.name, color, anchor="mm", font=font)
+                im.paste(ImageOps.colorize(w, "black", color), (x + x_offset, y + y_offset), w)
+
+
+
