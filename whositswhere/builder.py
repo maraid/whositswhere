@@ -24,7 +24,10 @@ class ReservationMapBuilder:
 
     def _create_desks(self, zone_id: str) -> DeskMap:
         json_desks = self.session.get_desk_zone_map(zone_id, self.selected_date)
-        return {d['id']: Desk(d['nameOrNull'], float(d['x']), float(d['y'])) for d in json_desks}
+        return {d['id']: Desk(d['nameOrNull'],
+                              float(d['x']),
+                              float(d['y']),
+                              float(d['radius'])) for d in json_desks}
 
     def _create_zones(self) -> ZoneMap:
         json_zones = self.session.get_zones()

@@ -1,4 +1,4 @@
-from models import ZoneMap
+from models import ZoneMap, Zone
 import pathlib
 from PIL import Image, ImageDraw, ImageColor, ImageFont, ImageOps
 import logging
@@ -23,13 +23,13 @@ class ImageHandler:
             im.save(image_path)
             logging.info(f"Created map for {zone.name} - {image_path.absolute()} ")
 
-    def _draw_names(self, im, zone):
+    def _draw_names(self, im: Image.Image, zone: Zone):
         draw = ImageDraw.Draw(im)
         for desk in zone.desks.values():
             x = int(im.width * desk.x)
             y = int(im.height * desk.y)
             if desk.is_free:
-                r = 0.03 * im.width
+                r = desk.radius * im.width
                 x0 = x - r / 2
                 x1 = x + r / 2
                 y0 = y - r / 2

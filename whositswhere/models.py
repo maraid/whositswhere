@@ -15,6 +15,7 @@ class Employee(NameBase):
 class Desk(NameBase):
     x: float
     y: float
+    radius: float
     reserved_by: None | Employee = None
 
     @property
