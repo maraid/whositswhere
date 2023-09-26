@@ -11,9 +11,7 @@ class ImageHandler:
         self.vip = vip
         self.image_paths: list[str] = []
 
-    def get_image(self):
-        target = pathlib.Path("results")
-        target.mkdir(exist_ok=True)
+    def create_images(self, target):
         for id_, zone in self.zones.items():
             image_path = target / (zone.name + '.png')
             self.session.download_image(id_, image_path)

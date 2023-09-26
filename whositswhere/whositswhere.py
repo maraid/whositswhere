@@ -1,13 +1,19 @@
 import argparse
 import builder
 from datetime import datetime
+import graphics
 import json
 import logging
-import queries
-import graphics
+import os
 import pathlib
 import pickle
+import queries
 import sys
+
+
+ROOT_DIR = pathlib.Path(__file__).parents[1].resolve()
+DEFAULT_CONFIG_PATH = ROOT_DIR / "config.json"
+DEFAULT_RESULTS_PATH = ROOT_DIR / "results"
 
 
 def load_config(config_path):
@@ -26,7 +32,12 @@ def main():
     parser.add_argument(
         "-c", "--config",
         help="Specify path to config file",
-        default=pathlib.Path(__file__).parents[1].resolve() / "config.json",
+        default=DEFAULT_CONFIG_PATH,
+        metavar="<path>")
+    parser.add_argument(
+        "-r", "--result",
+        help="Directory to put the generated images",
+        default=DEFAULT_RESULTS_PATH,
         metavar="<path>")
     args = parser.parse_args()
 
@@ -46,8 +57,13 @@ def main():
     #     zones = pickle.load(f)
 
     logging.info("Creating Images for the fetched zones")
+    args.result.mkdir(exist_ok=True)
     img_handler = graphics.ImageHandler(session, zones, config["vip"])
-    img_handler.get_image()
+    img_handler.create_images(args.result)
+
+    logging.info(f"Opening result location: {args.result}")
+    if sys.platform.startswith("win"):
+        os.startfile(args.result)
 
 
 if __name__ == "__main__":
